@@ -1,0 +1,90 @@
+{
+  "n": 560,
+  "accuracy": 0.9589285714285715,
+  "macro_precision": 0.957139355742297,
+  "macro_recall": 0.954661558109834,
+  "macro_f1": 0.9549916457811195,
+  "macro_specificity": 0.9799916503665855,
+  "macro_auc_ovr": 0.9973746202743349,
+  "meningioma_recall": 0.9027777777777778,
+  "classes_evaluated": [
+    "glioma",
+    "meningioma",
+    "pituitary tumor"
+  ],
+  "per_class": {
+    "glioma": {
+      "precision": 0.9955357142857143,
+      "recall": 0.9612068965517241,
+      "sensitivity": 0.9612068965517241,
+      "f1": 0.9780701754385964,
+      "specificity": 0.9969512195121951,
+      "auc_ovr": 0.9993429352396972,
+      "support": 232
+    },
+    "meningioma": {
+      "precision": 0.9558823529411765,
+      "recall": 0.9027777777777778,
+      "sensitivity": 0.9027777777777778,
+      "f1": 0.9285714285714286,
+      "specificity": 0.9855769230769231,
+      "auc_ovr": 0.9930555555555556,
+      "support": 144
+    },
+    "pituitary tumor": {
+      "precision": 0.92,
+      "recall": 1.0,
+      "sensitivity": 1.0,
+      "f1": 0.9583333333333334,
+      "specificity": 0.9574468085106383,
+      "auc_ovr": 0.9997253700277521,
+      "support": 184
+    }
+  },
+  "confusion_matrix": [
+    [
+      223,
+      6,
+      3
+    ],
+    [
+      1,
+      130,
+      13
+    ],
+    [
+      0,
+      0,
+      184
+    ]
+  ],
+  "bootstrap_95ci": {
+    "accuracy": {
+      "lo": 0.9305179571966565,
+      "hi": 0.9813564845500742
+    },
+    "macro_recall": {
+      "lo": 0.9271392855389042,
+      "hi": 0.9782805519173396
+    },
+    "macro_f1": {
+      "lo": 0.9229145211570419,
+      "hi": 0.9778070227964568
+    },
+    "macro_auc_ovr": {
+      "lo": 0.9938316404976497,
+      "hi": 0.9994874652355786
+    },
+    "meningioma_recall": {
+      "lo": 0.8324646005877638,
+      "hi": 0.9617555509441792
+    },
+    "unit": "patient",
+    "n_units": 48,
+    "n_boot": 1000
+  },
+  "tag": "B_cbfocal",
+  "dataset": "figshare_test",
+  "independence": "patient-grouped",
+  "model_path": "runs/B_cbfocal/best.weights.h5"
+}

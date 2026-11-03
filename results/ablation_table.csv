@@ -1,0 +1,7 @@
+dataset,run,accuracy,macro_f1,macro_recall,meningioma_recall,glioma_recall,pituitary_recall,macro_auc_ovr
+figshare_test,frozen_m2,0.925,0.9156,0.9121,0.7847,0.9569,0.9946,0.989
+figshare_test,A_ce,0.8643,0.8493,0.8487,0.6667,0.8793,1.0,0.9819
+figshare_test,B_cbfocal,0.9589,0.955,0.9547,0.9028,0.9612,1.0,0.9974
+brisc,frozen_m2,0.9288,0.929,0.9375,0.8387,0.9737,1.0,0.9955
+brisc,A_ce,0.8832,0.8853,0.8984,0.7312,0.9684,0.9957,0.9919
+brisc,B_cbfocal,0.9587,0.9592,0.9624,0.9211,0.9789,0.9871,0.9986

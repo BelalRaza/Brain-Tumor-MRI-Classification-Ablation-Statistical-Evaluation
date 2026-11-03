@@ -1,0 +1,90 @@
+{
+  "n": 702,
+  "accuracy": 0.9586894586894587,
+  "macro_precision": 0.9571935082319144,
+  "macro_recall": 0.9624062617817947,
+  "macro_f1": 0.9592397620470475,
+  "macro_specificity": 0.9796589146413743,
+  "macro_auc_ovr": 0.9986283014627727,
+  "meningioma_recall": 0.921146953405018,
+  "classes_evaluated": [
+    "glioma",
+    "meningioma",
+    "pituitary tumor"
+  ],
+  "per_class": {
+    "glioma": {
+      "precision": 0.9441624365482234,
+      "recall": 0.9789473684210527,
+      "sensitivity": 0.9789473684210527,
+      "f1": 0.9612403100775194,
+      "specificity": 0.978515625,
+      "auc_ovr": 0.9991467927631579,
+      "support": 190
+    },
+    "meningioma": {
+      "precision": 0.9809160305343512,
+      "recall": 0.921146953405018,
+      "sensitivity": 0.921146953405018,
+      "f1": 0.9500924214417746,
+      "specificity": 0.9881796690307328,
+      "auc_ovr": 0.9975342535397442,
+      "support": 279
+    },
+    "pituitary tumor": {
+      "precision": 0.9465020576131687,
+      "recall": 0.9871244635193133,
+      "sensitivity": 0.9871244635193133,
+      "f1": 0.9663865546218487,
+      "specificity": 0.9722814498933902,
+      "auc_ovr": 0.999203858085416,
+      "support": 233
+    }
+  },
+  "confusion_matrix": [
+    [
+      186,
+      4,
+      0
+    ],
+    [
+      9,
+      257,
+      13
+    ],
+    [
+      2,
+      1,
+      230
+    ]
+  ],
+  "bootstrap_95ci": {
+    "accuracy": {
+      "lo": 0.9430199430199431,
+      "hi": 0.9729344729344729
+    },
+    "macro_recall": {
+      "lo": 0.9484032963667763,
+      "hi": 0.9751315698924087
+    },
+    "macro_f1": {
+      "lo": 0.9442170998057817,
+      "hi": 0.9733311345040665
+    },
+    "macro_auc_ovr": {
+      "lo": 0.997556217155292,
+      "hi": 0.9994008317621078
+    },
+    "meningioma_recall": {
+      "lo": 0.8916050035236082,
+      "hi": 0.954372957107598
+    },
+    "unit": "image",
+    "n_units": 702,
+    "n_boot": 1000
+  },
+  "tag": "B_cbfocal",
+  "dataset": "brisc",
+  "independence": "image-level independent only (no patient IDs in BRISC; pHash deduplicated vs Figshare)",
+  "model_path": "runs/B_cbfocal/best.weights.h5"
+}

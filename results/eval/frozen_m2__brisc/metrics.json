@@ -1,0 +1,90 @@
+{
+  "n": 702,
+  "accuracy": 0.9287749287749287,
+  "macro_precision": 0.9271561643029916,
+  "macro_recall": 0.9374646293152237,
+  "macro_f1": 0.9290337624133334,
+  "macro_specificity": 0.9656464969405337,
+  "macro_auc_ovr": 0.9955180462947019,
+  "meningioma_recall": 0.8387096774193549,
+  "classes_evaluated": [
+    "glioma",
+    "meningioma",
+    "pituitary tumor"
+  ],
+  "per_class": {
+    "glioma": {
+      "precision": 0.8809523809523809,
+      "recall": 0.9736842105263158,
+      "sensitivity": 0.9736842105263158,
+      "f1": 0.925,
+      "specificity": 0.951171875,
+      "auc_ovr": 0.9950966282894737,
+      "support": 190
+    },
+    "meningioma": {
+      "precision": 0.9831932773109243,
+      "recall": 0.8387096774193549,
+      "sensitivity": 0.8387096774193549,
+      "f1": 0.9052224371373307,
+      "specificity": 0.9905437352245863,
+      "auc_ovr": 0.9919333655320843,
+      "support": 279
+    },
+    "pituitary tumor": {
+      "precision": 0.9173228346456693,
+      "recall": 1.0,
+      "sensitivity": 1.0,
+      "f1": 0.9568788501026694,
+      "specificity": 0.9552238805970149,
+      "auc_ovr": 0.9995241450625475,
+      "support": 233
+    }
+  },
+  "confusion_matrix": [
+    [
+      185,
+      4,
+      1
+    ],
+    [
+      25,
+      234,
+      20
+    ],
+    [
+      0,
+      0,
+      233
+    ]
+  ],
+  "bootstrap_95ci": {
+    "accuracy": {
+      "lo": 0.9088319088319088,
+      "hi": 0.9458689458689459
+    },
+    "macro_recall": {
+      "lo": 0.9207319352001081,
+      "hi": 0.953153482189943
+    },
+    "macro_f1": {
+      "lo": 0.9083375232308839,
+      "hi": 0.9459616390288411
+    },
+    "macro_auc_ovr": {
+      "lo": 0.9922861584745039,
+      "hi": 0.9978441349705487
+    },
+    "meningioma_recall": {
+      "lo": 0.796426948051948,
+      "hi": 0.8810736934178875
+    },
+    "unit": "image",
+    "n_units": 702,
+    "n_boot": 1000
+  },
+  "tag": "frozen_m2",
+  "dataset": "brisc",
+  "independence": "image-level independent only (no patient IDs in BRISC; pHash deduplicated vs Figshare)",
+  "model_path": "outputs/models/efficientnetb2.h5"
+}

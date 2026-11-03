@@ -1,0 +1,249 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{url}
+
+\begin{document}
+
+\title{Reproducing and Stress-Testing EfficientNetB2 for Brain Tumor CE-MRI Classification: Patient-Wise Validation, Class-Balanced Focal Loss, and Deduplicated External Evaluation}
+
+\author{\IEEEauthorblockN{Vaishnav Verma}
+\IEEEauthorblockA{\textit{Computer Vision Research-Reproduction Project} \\
+Brain Tumor MRI Classification Benchmark Study}
+}
+
+\maketitle
+
+\begin{abstract}
+Deep transfer learning models for brain tumor classification on the public Figshare T1-weighted contrast-enhanced MRI (CE-MRI) benchmark frequently report slice-level accuracies exceeding 98\%. In this reproduction and ablation study of an EfficientNetB2 transfer-learning pipeline (Zulfiqar et al., 2023), we first reproduce the authors' slice-wise protocol and obtain 98.21\% test accuracy and 97.77\% macro-recall (within 0.65 percentage points of the reported 98.86\%). However, enforcing a strict patient-grouped split across the 233 patients reveals a 5.71 percentage-point accuracy drop (to 92.50\%, 95\% CI 87.61--96.14\%) and a 15.90 percentage-point collapse in meningioma sensitivity (from 94.37\% to 78.47\%, 95\% CI 63.95--88.16\%), while slice-wise validation on augmented training data remains artificially inflated at 99.44\%. To address both protocol leakage and minority-class difficulty, we establish a patient-grouped validation split for model selection (H1), enforce deterministic seeding and manifest hashing (H3), and test a single pre-registered training-objective change (H2): replacing categorical cross-entropy (Run A) with class-balanced focal loss ($\gamma=2.0$, effective-number weights $\alpha=[0.744, 1.243, 1.012]$ derived from pre-augmentation source counts; Run B). On the held-out Figshare patient-wise test set (48 patients, 560 slices), class-balanced focal loss raises meningioma recall from 66.67\% (Run A) and 78.47\% (M2 baseline) to 90.28\% (95\% CI 83.25--96.18\%), macro-F1 to 95.50\% (95\% CI 92.29--97.78\%), and macro OvR ROC-AUC to 0.9974. On the external BRISC 2025 benchmark (H4), after removing 158 near-duplicate slices (18.4\% of the 860 three-class test set) identified via 64-bit DCT perceptual hashing against Figshare, Run B achieves 95.87\% accuracy and 92.11\% meningioma recall across the 702 deduplicated slices. All results are reported as benchmark observations with bootstrap 95\% confidence intervals and make no clinical claims.
+\end{abstract}
+
+\begin{IEEEkeywords}
+brain tumor classification, CE-MRI, EfficientNet, patient-wise splitting, class-balanced focal loss, perceptual hashing, external validation, reproducibility
+\end{IEEEkeywords}
+
+\section{Introduction}
+Brain tumor classification from magnetic resonance imaging (MRI) is a widely studied benchmark task in medical computer vision, with public collections enabling standardized comparison of convolutional and hybrid transfer-learning architectures \cite{cheng2015enhanced,zulfiqar2023efficientnet}. Pre-trained ImageNet backbones—particularly the EfficientNet family \cite{tan2019efficientnet}—are widely adopted because compound scaling provides strong feature representations while requiring substantially less training data than training 3D volumetric networks from scratch.
+
+Despite near-perfect headline accuracies on public 2D benchmarks, three methodological issues complicate interpretation:
+\begin{enumerate}
+    \item \textbf{Slice-level data leakage:} Public datasets such as Figshare CE-MRI contain multiple 2D slices per patient (3,064 slices from 233 patients). Random slice-wise splitting places adjacent slices from the same patient into both training and test partitions, conflating patient memorization with cross-patient generalization. Even when the test set is grouped by patient, using Keras \texttt{validation\_split=0.1} on offline-augmented training slices leaks augmented copies of the same slice into validation, yielding an overly optimistic checkpoint selector.
+    \item \textbf{Class-specific sensitivity imbalance:} Meningioma is the smallest class in Figshare (708 slices vs.\ 1,426 glioma and 930 pituitary) and exhibits heterogeneous dural morphology that is frequently confused with glioma or pituitary slices under patient-wise evaluation. Relying on overall accuracy masks severe deficits in meningioma recall.
+    \item \textbf{Unverified external generalization:} Newer multi-source benchmarks often incorporate slices derived from Figshare without explicit provenance tracking, inflating apparent cross-dataset accuracy unless near-duplicates are filtered prior to evaluation.
+\end{enumerate}
+
+This work reproduces the EfficientNetB2 brain tumor classification pipeline of Zulfiqar et al.\ \cite{zulfiqar2023efficientnet} on the Figshare CE-MRI dataset (glioma, meningioma, pituitary tumor) and conducts a controlled ablation study. Prior to running our ablation, we fixed our evaluation protocol—carving a patient-grouped validation partition from the training patients (H1) and enforcing global seeds and SHA-256 manifest hashes (H3)—and pre-registered our predictions for a single experimental modification (H2): replacing categorical cross-entropy with class-balanced focal loss \cite{lin2017focal,cui2019class}. We then evaluate both models zero-shot on the external BRISC 2025 test set \cite{fateh2025brisc} after perceptual-hash deduplication (H4). This study evaluates benchmark classification behavior strictly on public research data and makes no diagnostic or clinical claims.
+
+\section{Related Work}
+Recent literature on brain tumor MRI classification spans transfer-learning CNNs, attention-augmented hybrids, and explainable AI (XAI) pipelines. Zulfiqar et al.\ \cite{zulfiqar2023efficientnet} fine-tuned EfficientNetB0--B4 on brain-contour-cropped Figshare CE-MRI slices with class-wise offline augmentation, reporting 98.86\% accuracy and 98.77\% macro-recall with EfficientNetB2 under an 80:20 slice-wise split. Subsequent four-class studies on Kaggle/Figshare composites have explored VGG16 and custom CNNs, MobileNetV2 + EfficientNetV2B0 hybrids with KNN heads, lightweight attention transfer learning, and CNN-Transformer local-global feature fusion with Grad-CAM++ explainability. While several 2024--2026 studies report accuracies above 98--99\%, most rely on slice-level splits, omit patient-grouped confidence intervals, and do not screen external test sets for perceptual overlap with Figshare. Volumetric 3D CNN approaches on multi-institutional cohorts avoid slice-level leakage by construction but require complete 3D NIfTI volumes and substantially greater compute. Our work complements this literature by quantifying the exact slice-to-patient performance gap on Figshare, testing class-balanced focal loss under strict patient-grouped validation, and auditing cross-dataset leakage on BRISC 2025.
+
+\section{Dataset, Preprocessing, and Protocol Fixes}
+
+\subsection{Figshare CE-MRI and Brain-Contour Cropping}
+The Figshare brain tumor dataset \cite{cheng2015enhanced} contains 3,064 T1-weighted contrast-enhanced MRI slices from 233 patients across three classes: glioma (1,426 slices, 89 patients), meningioma (708 slices, 82 patients), and pituitary tumor (930 slices, 62 patients). Each MATLAB (\texttt{.mat}) file provides the 16-bit slice, class label, and patient identifier (\texttt{PID}). Following Zulfiqar et al.\ \cite{zulfiqar2023efficientnet}, each slice is min-max normalized to 8-bit grayscale, smoothed with a $5\times5$ Gaussian kernel, thresholded at intensity 45 followed by two erosion and two dilation iterations, cropped to the extreme contour coordinates of the largest connected component, and resized to $240\times240\times3$.
+
+\subsection{Patient-Grouped Train/Val/Test Partitioning (H1 \& H3)}
+To preserve comparability with our M2 patient-wise baseline while eliminating validation leakage, we retain the exact patient-wise test partition (48 patients, 560 slices: 232 glioma, 144 meningioma, 184 pituitary) and carve a stratified, patient-grouped validation partition ($\sim$15\% of training patients via \texttt{StratifiedGroupKFold}, seed 42) from the remaining 185 patients. The resulting partition is summarized in Table~\ref{tab:splits}. Automated unit tests verify zero patient overlap across all partitions:
+\begin{equation}
+\mathcal{P}_{\text{train}} \cap \mathcal{P}_{\text{val}} = \emptyset,\quad
+\mathcal{P}_{\text{train}} \cap \mathcal{P}_{\text{test}} = \emptyset,\quad
+\mathcal{P}_{\text{val}} \cap \mathcal{P}_{\text{test}} = \emptyset.
+\end{equation}
+
+\begin{table}[htbp]
+\caption{Figshare Patient-Grouped Split Counts (Zero Patient Overlap)}
+\label{tab:splits}
+\centering
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Class} & \textbf{Train (Source)} & \textbf{Train (Aug.)} & \textbf{Val} & \textbf{Test} \\
+\midrule
+Glioma          & 1,024 (61 pts) & 3,072 & 170 (10 pts) & 232 (18 pts) \\
+Meningioma      &   484 (56 pts) & 2,903 &  80 (9 pts)  & 144 (17 pts) \\
+Pituitary tumor &   637 (42 pts) & 3,185 & 109 (7 pts)  & 184 (13 pts) \\
+\midrule
+\textbf{Total}  & \textbf{2,145 (159 pts)} & \textbf{9,160} & \textbf{359 (26 pts)} & \textbf{560 (48 pts)} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Offline training augmentation follows the base paper (\texttt{ImageDataGenerator}: rotation $\pm 10^\circ$, width/height shift 0.1, horizontal/vertical flips, nearest-neighbor fill), generating 3, 6, and 5 augmented images per source slice for glioma, meningioma, and pituitary tumor respectively. Augmented files originating from validation patients are excluded from training via source-stem provenance mapping (\texttt{aug\_<stem>\_*.png} $\to$ \texttt{<stem>.png} $\to$ \texttt{PID}). Validation and test partitions are never augmented.
+
+\subsection{External Validation Dataset and pHash Deduplication (H4)}
+For external validation, we use the official test split of BRISC 2025 \cite{fateh2025brisc}, restricting to the three overlapping tumor classes (254 glioma, 306 meningioma, 300 pituitary; 860 slices total; \texttt{no\_tumor} excluded) and applying the identical contour-crop and $240\times240$ resize pipeline. Because public MRI compilations often overlap with Figshare, we compute a 64-bit Discrete Cosine Transform (DCT) perceptual hash (pHash: $32\times32$ area resize $\to$ 2D orthonormal DCT $\to$ top-left $8\times8$ low-frequency block thresholded at its median) for all 860 BRISC test slices against all 3,064 Figshare slices. Any BRISC slice with minimum Hamming distance $d_H \le 5$ to a Figshare slice is dropped prior to evaluation.
+
+As shown in Table~\ref{tab:dedupe}, \textbf{158 of the 860 BRISC test slices (18.4\%)} matched a Figshare slice with $d_H \le 5$ (124 exact matches with $d_H=0$, 32 with $d_H=2$, and 2 with $d_H=4$), confirming substantial cross-benchmark overlap. Removing these leaves \textbf{702 deduplicated external slices}. Because BRISC filenames do not encode patient identifiers, BRISC metrics are reported as \textit{image-level independent only}.
+
+\begin{table}[htbp]
+\caption{BRISC 2025 External Test Deduplication Against Figshare ($d_H \le 5$)}
+\label{tab:dedupe}
+\centering
+\begin{tabular}{lccc}
+\toprule
+\textbf{Class} & \textbf{Raw Test} & \textbf{Dropped ($d_H \le 5$)} & \textbf{Kept (Clean)} \\
+\midrule
+Glioma          & 254 &  64 (25.2\%) & 190 \\
+Meningioma      & 306 &  27 (8.8\%)  & 279 \\
+Pituitary tumor & 300 &  67 (22.3\%) & 233 \\
+\midrule
+\textbf{Total}  & \textbf{860} & \textbf{158 (18.4\%)} & \textbf{702} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Baseline Reproduction and Proposed Modification}
+
+\subsection{Baseline Architecture and Reproduction Gap (M2)}
+The base architecture is ImageNet-pretrained EfficientNetB2 (\texttt{include\_top=False}, input $240\times240\times3$, drop-connect rate 0.2) followed by global average pooling, dropout ($p=0.5$), and a 3-way softmax dense layer. Under the paper's slice-wise 80:20 split, our M2 reproduction achieved \textbf{98.21\% accuracy, 98.10\% macro-precision, 97.77\% macro-recall, and 97.92\% macro-F1} (meningioma recall 94.37\%), closely matching Zulfiqar et al.'s reported 98.86\% accuracy. Under our patient-wise split, the same training recipe (using Keras \texttt{validation\_split=0.1} on augmented training slices) reached 99.44\% slice-validation accuracy at Epoch 26, but evaluated on the held-out test patients yielded \textbf{92.50\% accuracy and 78.47\% meningioma recall} (31 of 144 meningioma slices misclassified: 19 as pituitary, 12 as glioma).
+
+\subsection{Hypothesis H2: Class-Balanced Focal Loss}
+Although offline augmentation equalizes file counts on disk ($\sim$3,000 per class), the underlying patient and slice diversity remains imbalanced: meningioma has only 484 unique training source slices vs.\ 1,024 for glioma. Furthermore, standard categorical cross-entropy receives non-trivial gradient contributions from thousands of easily classified glioma and pituitary slices.
+
+We replace categorical cross-entropy (Run A) with \textbf{class-balanced focal loss} (Run B), combining Cui et al.'s effective-number weighting \cite{cui2019class} on the *pre-augmentation* source counts $n_c \in \{1024, 484, 637\}$ with Lin et al.'s focal modulation \cite{lin2017focal}:
+\begin{equation}
+\mathcal{L}_{\text{CB-Focal}}(y, p) = -\sum_{c=1}^{C} \alpha_c \, y_c \, (1 - p_c)^\gamma \log(p_c),
+\quad
+\alpha_c \propto \frac{1 - \beta}{1 - \beta^{n_c}},
+\end{equation}
+normalized such that $\frac{1}{C}\sum_{c} \alpha_c = 1$. With $\beta = 0.999$ and $\gamma = 2.0$, the resulting class weights are $\alpha_{\text{glioma}} = 0.744$, $\alpha_{\text{meningioma}} = 1.243$, and $\alpha_{\text{pituitary}} = 1.012$, assigning meningioma $1.67\times$ the weight of glioma while down-weighting well-classified examples by $(1-p_t)^2$.
+
+\subsection{Pre-Registered Predictions and Controlled Setup}
+Before running training, we pre-registered the following predictions in \texttt{results/predictions.md}:
+\begin{enumerate}
+    \item \textbf{H2 (Figshare patient-wise test):} Run B (CB-Focal) will increase meningioma recall by $+3$ to $+8$ percentage points and macro-recall by $+1$ to $+3$ percentage points relative to Run A (CE), while overall accuracy remains within $\pm 1$ percentage point and macro OvR AUC remains stable ($\pm 0.01$).
+    \item \textbf{H1 (Validation honesty):} Patient-grouped validation macro-F1 will track test macro-F1 within $\sim$3 percentage points, eliminating the 99.4\% leaky validation ceiling.
+    \item \textbf{H4 (External BRISC test):} Meningioma will remain the lowest-recall class on external data, and any meningioma sensitivity improvement from Run B will partially transfer without closing the cross-dataset domain gap.
+\end{enumerate}
+
+Both Run A and Run B use identical hyperparameters: Adam ($\text{lr}=10^{-3}$), batch size 32, maximum 25 epochs, seed 42, \texttt{ReduceLROnPlateau} (factor 0.3, patience 3 on patient-val macro-F1), early stopping (patience 7 on patient-val macro-F1), and checkpoint selection on maximum patient-grouped validation macro-F1 (tie-broken by validation meningioma recall).
+
+\section{Experiments and Results}
+
+\subsection{Compute Setup and Training Dynamics}
+Run A (categorical cross-entropy) and Run B (class-balanced focal loss, $\gamma=2.0$) were trained in parallel on AWS SageMaker using NVIDIA A10G GPUs (24~GB VRAM; \texttt{ml.g5.xlarge} and \texttt{ml.g5.2xlarge}) with TensorFlow~2.16.2. Every epoch checkpoint was persisted to Amazon S3 with automatic resume support. After initial XLA compilation on Epoch~1, training proceeded at $\sim$25.8--26.4 seconds per epoch (9,160 training images).
+
+Fig.~\ref{fig:curves} illustrates the training and patient-grouped validation trajectories. Under standard cross-entropy (Run A), training accuracy saturated above 99.6\% by Epoch~6; validation macro-F1 peaked early at Epoch~4 (93.63\%, validation meningioma recall 87.50\%) and failed to improve after learning-rate reductions at Epochs~8 and 11, triggering early stopping after Epoch~11 (767~s billable time). In contrast, under class-balanced focal loss (Run B), down-weighting well-classified examples via $(1-p_t)^2$ and up-weighting meningioma via $\alpha_{\text{men}}=1.243$ prevented premature saturation: following the first learning-rate reduction to $3\times 10^{-4}$ at Epoch~5, validation macro-F1 rose steadily to \textbf{94.65\% at Epoch~14} (validation meningioma recall \textbf{96.25\%}, validation macro AUC 0.9945) before early stopping at Epoch~21 (974~s billable time).
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\columnwidth]{figures/training_curves.png}
+\caption{Training loss, patient-grouped validation macro-F1, and validation meningioma recall across epochs for Run A (CE) and Run B (CB-Focal $\gamma=2$).}
+\label{fig:curves}
+\end{figure}
+
+\subsection{Ablation Results on Figshare and External BRISC 2025}
+Table~\ref{tab:ablation} reports the complete evaluation across the Figshare patient-wise test set ($n=560$ slices from 48 patients; 1,000-iteration patient-grouped bootstrap 95\% CIs) and the deduplicated external BRISC 2025 test set ($n=702$ slices; image-level bootstrap 95\% CIs). Per-class sensitivity with 95\% CIs and one-vs-rest ROC curves are shown in Figs.~\ref{fig:recall} and \ref{fig:roc}.
+
+\begin{table*}[htbp]
+\caption{Ablation and External Validation Results (with 1,000-Iteration Bootstrap 95\% Confidence Intervals)}
+\label{tab:ablation}
+\centering
+\begin{tabular}{llllcccccc}
+\toprule
+\textbf{Dataset} & \textbf{Model / Run} & \textbf{Val Split} & \textbf{Loss} & \textbf{Accuracy (\%)} & \textbf{Macro-F1 (\%)} & \textbf{Macro-R (\%)} & \textbf{Meningioma R (\%)} & \textbf{Glioma / Pit.\ R (\%)} & \textbf{Macro AUC} \\
+\midrule
+Figshare Slice ($n=614$) & M2 Paper Repro & Leaky slice & CE & 98.21 & 97.92 & 97.77 & 94.37 & 98.95 / 100.0 & --- \\
+\midrule
+\multirow{3}{*}{\shortstack[l]{Figshare Test\\(patient-wise,\\$n=560$, 48 pts)}}
+ & M2 Frozen Baseline & Leaky slice & CE & 92.50 [87.6, 96.1] & 91.56 [85.7, 95.2] & 91.21 [86.1, 94.9] & 78.47 [64.0, 88.2] & 95.69 / 99.46 & 0.9890 \\
+ & Run A (H1+H3) & Patient val & CE & 86.43 [78.0, 93.0] & 84.93 [76.3, 91.1] & 84.87 [78.2, 90.9] & 66.67 [50.7, 81.9] & 87.93 / 100.0 & 0.9819 \\
+ & \textbf{Run B (H2)} & \textbf{Patient val} & \textbf{CB-Focal} & \textbf{95.89 [93.1, 98.1]} & \textbf{95.50 [92.3, 97.8]} & \textbf{95.47 [92.7, 97.8]} & \textbf{90.28 [83.2, 96.2]} & \textbf{96.12 / 100.0} & \textbf{0.9974} \\
+\midrule
+\multirow{3}{*}{\shortstack[l]{BRISC 2025\\External Test\\(dedup, $n=702$)}}
+ & M2 Frozen Baseline & Leaky slice & CE & 92.88 [90.9, 94.6] & 92.90 [90.8, 94.6] & 93.75 [92.1, 95.3] & 83.87 [79.6, 88.1] & 97.37 / 100.0 & 0.9955 \\
+ & Run A (H1+H3) & Patient val & CE & 88.32 [85.9, 90.7] & 88.53 [86.1, 90.8] & 89.84 [87.7, 91.8] & 73.12 [67.7, 78.3] & 96.84 / 99.57 & 0.9919 \\
+ & \textbf{Run B (H2)} & \textbf{Patient val} & \textbf{CB-Focal} & \textbf{95.87 [94.3, 97.3]} & \textbf{95.92 [94.4, 97.3]} & \textbf{96.24 [94.8, 97.5]} & \textbf{92.11 [89.2, 95.4]} & \textbf{97.89 / 98.71} & \textbf{0.9986} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\columnwidth]{figures/per_class_recall_ci.png}
+\caption{Per-class sensitivity/recall with 95\% bootstrap confidence intervals on Figshare patient-wise test and deduplicated BRISC external test.}
+\label{fig:recall}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\columnwidth]{figures/roc_curves.png}
+\caption{One-vs-rest ROC curves for Run A (CE) and Run B (CB-Focal $\gamma=2$) on Figshare patient-wise test and BRISC external test.}
+\label{fig:roc}
+\end{figure}
+
+\subsection{Comparison Against Pre-Registered Predictions}
+\begin{enumerate}
+    \item \textbf{H2 (Meningioma sensitivity and macro-recall):} Confirmed in direction and exceeded in magnitude. On Figshare patient-wise test, Run B improved meningioma recall by \textbf{$+23.61$ percentage points} over Run A (66.67\% $\to$ 90.28\%, 130/144 vs.\ 96/144 slices) and by \textbf{$+11.81$ percentage points} over the M2 Frozen Baseline (78.47\% $\to$ 90.28\%). Contrary to our conservative expectation that overall accuracy might dip slightly by $\le 1$ percentage point due to precision-recall trade-offs, Run B improved glioma recall (96.12\%) and preserved 100.0\% pituitary recall, raising overall patient-wise accuracy to \textbf{95.89\%} ($+9.46$ pp vs.\ Run A; $+3.39$ pp vs.\ M2) and macro OvR AUC to \textbf{0.9974}.
+    \item \textbf{H1 (Patient-grouped validation honesty):} Confirmed. Run B's patient-grouped validation macro-F1 (94.65\%) matched its held-out test macro-F1 (95.50\%) within 0.85 percentage points, eliminating the artificial 99.44\% ceiling observed under slice-level validation on augmented training images.
+    \item \textbf{H4 (External validation on deduplicated BRISC 2025):} Partially confirmed, partially falsified. Our pHash filter confirmed substantial cross-dataset contamination (158/860 near-duplicates removed), and meningioma remained the lowest-recall class across all models. Moreover, Run B's meningioma recall improvement transferred strongly to BRISC (\textbf{92.11\%} vs.\ 73.12\% for Run A and 83.87\% for M2). However, our pre-registered prediction of a 10--25 percentage-point overall accuracy drop on BRISC was falsified: Run B achieved \textbf{95.87\%} accuracy on the 702 deduplicated BRISC slices, indicating that even after removing near-duplicates ($d_H \le 5$), BRISC T1 slices share closely aligned intensity and framing characteristics with Figshare.
+\end{enumerate}
+
+\section{Failure Analysis}
+
+\subsection{Confusion Patterns and Slice-Level Flip Analysis}
+Fig.~\ref{fig:cm} compares the confusion matrices of Run A and Run B across both datasets. In both the M2 baseline and Run A, the dominant failure mode is \textbf{meningioma misclassified as pituitary tumor} (19/144 in M2; 44/144 in Run A on Figshare; 51/279 in Run A on BRISC). Anatomically, parasellar and sphenoid-wing meningiomas appear near the sella turcica in coronal and sagittal planes, resembling pituitary adenomas after brain-contour cropping removes global skull landmarks.
+
+Replacing cross-entropy with class-balanced focal loss reduced meningioma-to-pituitary errors on Figshare from 44 (Run A) and 19 (M2) to \textbf{13 slices}, and meningioma-to-glioma errors to \textbf{1 slice}. Across all 560 Figshare test slices, Run B corrected \textbf{59 slices} that Run A misclassified (37 meningioma, 22 glioma) while introducing only \textbf{6 new errors} (3 meningioma, 3 glioma), for a net gain of $+53$ correct slices ($+9.46$ percentage points). Seventeen slices were misclassified by both models.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\columnwidth]{figures/confusion_comparison.png}
+\caption{Confusion matrices on Figshare patient-wise test ($n=560$) and deduplicated BRISC external test ($n=702$) for Run A (CE) and Run B (CB-Focal).}
+\label{fig:cm}
+\end{figure}
+
+\subsection{Patient-Level Error Concentration and Grad-CAM Inspection}
+Evaluating errors by patient on the Figshare test set reveals strong clustering: \textbf{36 of the 48 test patients (75.0\%) achieved 100\% slice-level accuracy} under Run B, with all 23 errors concentrated in 12 patients—and \textbf{17 of the 23 errors (73.9\%) occurring in just 6 patients} (e.g., meningioma patient \texttt{107248} with 4/15 errors, down from 12/15 in Run A; meningioma patients \texttt{101127} and \texttt{111366} with 3/12 errors each; glioma patient \texttt{102075} with 3/9 errors). This confirms why slice-level evaluation without patient grouping understates uncertainty.
+
+Fig.~\ref{fig:gradcam} displays qualitative Grad-CAM visualizations (\texttt{top\_activation} layer) for three high-confidence misclassifications of Run B (top three rows) and three slices where Run B corrected Run A's misclassification (bottom three rows). In the remaining misclassified slices, attention frequently latches onto bright periventricular or sellar contrast structures or peripheral contour artifacts rather than the tumor core. We emphasize that Grad-CAM heatmaps provide only coarse post-hoc inspection of final convolutional activations and do not constitute clinical explanations.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\columnwidth]{figures/failure_gallery_gradcam.png}
+\caption{Qualitative Grad-CAM inspection on Figshare test slices: top 3 rows show remaining high-confidence errors of Run B; bottom 3 rows show slices misclassified by Run A (CE) that were corrected by Run B (CB-Focal).}
+\label{fig:gradcam}
+\end{figure}
+
+\section{Limitations}
+This study has several important limitations:
+\begin{enumerate}
+    \item \textbf{Single patient split and single training seed:} Due to compute budget constraints, Run A and Run B were evaluated on a single fixed patient-grouped split and seed (42) rather than a $5\times3$ multi-fold cross-validation grid. We mitigate this by reporting 1,000-iteration patient-grouped bootstrap 95\% confidence intervals across the 48 test patients.
+    \item \textbf{GPU kernel non-determinism:} While Python, NumPy, and TensorFlow random seeds were fixed and CPU op determinism was verified via unit tests, CUDA depthwise convolution kernels on NVIDIA A10G GPUs are not bit-exact deterministic.
+    \item \textbf{2D slice-level scope and class subset:} Models operate on pre-selected 2D T1-CE/T1 slices across three tumor types; non-tumor images (\texttt{no\_tumor} in BRISC) and full 3D volumetric context are excluded.
+    \item \textbf{External dataset patient metadata:} BRISC 2025 filenames do not provide patient identifiers; consequently, external evaluation is image-level independent (after pHash deduplication against Figshare) rather than patient-grouped.
+    \item \textbf{No clinical applicability:} High benchmark metrics on curated public datasets do not imply clinical utility or diagnostic safety.
+    \item \textbf{Run A under-performs the M2 baseline:} Run A (CE, 86.43\%) scored below the M2 frozen baseline (92.50\%). M2 trained on more patients (no validation carve-out) for 26 epochs, whereas Run A's honest patient-grouped selector stopped at Epoch~4. With a single seed, part of the A$\to$B gap may reflect CE run-to-run variance; the more conservative comparison is Run B vs.\ M2 ($+11.81$ pp meningioma recall).
+    \item \textbf{Framework-version confound vs.\ M2:} Runs A and B were trained in Keras~3.4.1 (SageMaker), where EfficientNet's input \texttt{Normalization} layer stays at mean~0/variance~1 after ImageNet weight loading; M2 was trained in Keras~3.15.1 with ImageNet mean/std applied. This does not affect the A vs.\ B comparison (identical stack) but is a confound when comparing either run with M2.
+\end{enumerate}
+
+\section{Conclusion}
+\section{Conclusion}
+We reproduced an EfficientNetB2 brain tumor CE-MRI classification pipeline and demonstrated that enforcing strict patient-grouped splitting exposes a 5.71 percentage-point accuracy drop (98.21\% $\to$ 92.50\%) and a 15.90 percentage-point drop in meningioma recall (94.37\% $\to$ 78.47\%) hidden by slice-level evaluation. Under a controlled patient-grouped validation protocol, replacing categorical cross-entropy with class-balanced focal loss ($\gamma=2.0$, $\alpha$ weighted by pre-augmentation source counts) increased held-out patient-wise meningioma recall to 90.28\% (95\% CI 83.25--96.18\%) and overall accuracy to 95.89\% (95\% CI 93.05--98.14\%, macro AUC 0.9974). Furthermore, perceptual-hash auditing of the external BRISC 2025 test set revealed 18.4\% near-duplicate overlap with Figshare; on the remaining 702 deduplicated slices, our class-balanced focal model maintained 95.87\% accuracy and 92.11\% meningioma sensitivity. Future work should evaluate multi-fold cross-validation and scanner-intensity augmentation across truly independent multi-institutional 3D NIfTI cohorts.
+
+\begin{thebibliography}{10}
+\bibitem{zulfiqar2023efficientnet}
+F.~Zulfiqar, U.~I. Bajwa, and Y.~Mehmood, ``Multi-class classification of brain tumor types from MR images using EfficientNets,'' \emph{Biomedical Signal Processing and Control}, vol.~84, p.~104777, 2023.
+
+\bibitem{cheng2015enhanced}
+J.~Cheng \emph{et al.}, ``Enhanced performance of brain tumor classification via tumor region augmentation and partition,'' \emph{PLOS ONE}, vol.~10, no.~10, p.~e0140381, 2015.
+
+\bibitem{tan2019efficientnet}
+M.~Tan and Q.~Le, ``EfficientNet: Rethinking model scaling for convolutional neural networks,'' in \emph{Proc.\ ICML}, 2019, pp.~6105--6114.
+
+\bibitem{lin2017focal}
+T.-Y. Lin, P.~Goyal, R.~Girshick, K.~He, and P.~Doll{\'a}r, ``Focal loss for dense object detection,'' in \emph{Proc.\ IEEE ICCV}, 2017, pp.~2980--2988.
+
+\bibitem{cui2019class}
+Y.~Cui, M.~Jia, T.-Y. Lin, Y.~Song, and S.~Belongie, ``Class-balanced loss based on effective number of samples,'' in \emph{Proc.\ IEEE/CVF CVPR}, 2019, pp.~9268--9277.
+
+\bibitem{fateh2025brisc}
+A.~Fateh \emph{et al.}, ``BRISC: Brain tumor image segmentation and classification benchmark,'' \emph{arXiv preprint arXiv:2506.14318}, 2025.
+\end{thebibliography}
+
+\end{document}

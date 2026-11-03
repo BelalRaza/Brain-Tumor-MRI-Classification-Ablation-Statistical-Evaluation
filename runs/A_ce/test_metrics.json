@@ -1,0 +1,102 @@
+{
+  "n": 560,
+  "accuracy": 0.8642857142857143,
+  "macro_precision": 0.8729016072712982,
+  "macro_recall": 0.8486590038314176,
+  "macro_f1": 0.8493309019324701,
+  "macro_specificity": 0.9332133281439198,
+  "macro_auc_ovr": 0.9818815804903008,
+  "meningioma_recall": 0.6666666666666666,
+  "classes_evaluated": [
+    "glioma",
+    "meningioma",
+    "pituitary tumor"
+  ],
+  "per_class": {
+    "glioma": {
+      "precision": 0.9807692307692307,
+      "recall": 0.8793103448275862,
+      "sensitivity": 0.8793103448275862,
+      "f1": 0.9272727272727272,
+      "specificity": 0.9878048780487805,
+      "auc_ovr": 0.9920495164003365,
+      "support": 232
+    },
+    "meningioma": {
+      "precision": 0.8807339449541285,
+      "recall": 0.6666666666666666,
+      "sensitivity": 0.6666666666666666,
+      "f1": 0.7588932806324111,
+      "specificity": 0.96875,
+      "auc_ovr": 0.9566306089743589,
+      "support": 144
+    },
+    "pituitary tumor": {
+      "precision": 0.757201646090535,
+      "recall": 1.0,
+      "sensitivity": 1.0,
+      "f1": 0.8618266978922716,
+      "specificity": 0.8430851063829787,
+      "auc_ovr": 0.9969646160962072,
+      "support": 184
+    }
+  },
+  "confusion_matrix": [
+    [
+      204,
+      13,
+      15
+    ],
+    [
+      4,
+      96,
+      44
+    ],
+    [
+      0,
+      0,
+      184
+    ]
+  ],
+  "bootstrap_95ci": {
+    "accuracy": {
+      "lo": 0.7804686167491046,
+      "hi": 0.9300573255259963
+    },
+    "macro_recall": {
+      "lo": 0.7822259989866766,
+      "hi": 0.9089432501964391
+    },
+    "macro_f1": {
+      "lo": 0.7631059173726848,
+      "hi": 0.9113338486090655
+    },
+    "macro_auc_ovr": {
+      "lo": 0.9639370568037297,
+      "hi": 0.9940736183881853
+    },
+    "meningioma_recall": {
+      "lo": 0.5072463768115942,
+      "hi": 0.8188578619367209
+    },
+    "unit": "patient",
+    "n_units": 48,
+    "n_boot": 1000
+  },
+  "best_epoch": 4,
+  "best_val": {
+    "epoch": 4,
+    "lr": 0.001,
+    "loss": 0.06192127987742424,
+    "accuracy": 0.9791484475135803,
+    "val_accuracy": 0.9387186629526463,
+    "val_macro_f1": 0.9363389303498719,
+    "val_macro_recall": 0.9293173232595792,
+    "val_meningioma_recall": 0.875,
+    "val_macro_auc": 0.9928755154906876,
+    "seconds": 26.4,
+    "improved": 1
+  },
+  "run_name": "A_ce",
+  "train_minutes": 9.6
+}

@@ -1,0 +1,11 @@
+tensorflow>=2.12,<2.16
+numpy>=1.23
+opencv-python-headless>=4.8
+scipy>=1.10
+scikit-learn>=1.2
+matplotlib>=3.7
+pandas>=1.5
+tqdm>=4.65
+seaborn>=0.12
+h5py>=3.8
+Pillow>=9.5

@@ -1,0 +1,452 @@
+{
+  "n_fixed_by_B": 59,
+  "n_broken_by_B": 6,
+  "n_both_wrong": 17,
+  "net_gain_slices": 53,
+  "fixed_by_B_by_true_class": {
+    "glioma": 22,
+    "meningioma": 37
+  },
+  "broken_by_B_by_true_class": {
+    "glioma": 3,
+    "meningioma": 3
+  },
+  "fixed_examples": [
+    {
+      "file": "1882.png",
+      "patient_id": "MR049142",
+      "true": "glioma",
+      "pred_A": "meningioma",
+      "pred_B": "glioma",
+      "conf_A": 0.5899,
+      "conf_B": 0.9285
+    },
+    {
+      "file": "1883.png",
+      "patient_id": "MR049142",
+      "true": "glioma",
+      "pred_A": "meningioma",
+      "pred_B": "glioma",
+      "conf_A": 0.7272,
+      "conf_B": 0.9559
+    },
+    {
+      "file": "1964.png",
+      "patient_id": "MR050687",
+      "true": "glioma",
+      "pred_A": "pituitary tumor",
+      "pred_B": "glioma",
+      "conf_A": 0.747,
+      "conf_B": 0.9197
+    },
+    {
+      "file": "2037.png",
+      "patient_id": "MR051651",
+      "true": "glioma",
+      "pred_A": "meningioma",
+      "pred_B": "glioma",
+      "conf_A": 0.8005,
+      "conf_B": 0.9948
+    },
+    {
+      "file": "2248.png",
+      "patient_id": "MR049142",
+      "true": "glioma",
+      "pred_A": "pituitary tumor",
+      "pred_B": "glioma",
+      "conf_A": 0.9325,
+      "conf_B": 0.835
+    },
+    {
+      "file": "2249.png",
+      "patient_id": "MR049142",
+      "true": "glioma",
+      "pred_A": "pituitary tumor",
+      "pred_B": "glioma",
+      "conf_A": 0.4994,
+      "conf_B": 0.8966
+    },
+    {
+      "file": "2315.png",
+      "patient_id": "MR050687",
+      "true": "glioma",
+      "pred_A": "meningioma",
+      "pred_B": "glioma",
+      "conf_A": 0.514,
+      "conf_B": 0.8089
+    },
+    {
+      "file": "2858.png",
+      "patient_id": "MR049142",
+      "true": "glioma",
+      "pred_A": "pituitary tumor",
+      "pred_B": "glioma",
+      "conf_A": 0.932,
+      "conf_B": 0.8946
+    },
+    {
+      "file": "2859.png",
+      "patient_id": "MR049142",
+      "true": "glioma",
+      "pred_A": "pituitary tumor",
+      "pred_B": "glioma",
+      "conf_A": 0.6604,
+      "conf_B": 0.9714
+    },
+    {
+      "file": "2996.png",
+      "patient_id": "MR052585B",
+      "true": "glioma",
+      "pred_A": "pituitary tumor",
+      "pred_B": "glioma",
+      "conf_A": 0.6196,
+      "conf_B": 0.9315
+    },
+    {
+      "file": "723.png",
+      "patient_id": "102075",
+      "true": "glioma",
+      "pred_A": "pituitary tumor",
+      "pred_B": "glioma",
+      "conf_A": 0.8569,
+      "conf_B": 0.9309
+    },
+    {
+      "file": "739.png",
+      "patient_id": "107747",
+      "true": "glioma",
+      "pred_A": "meningioma",
+      "pred_B": "glioma",
+      "conf_A": 0.6486,
+      "conf_B": 0.9688
+    },
+    {
+      "file": "761.png",
+      "patient_id": "102075",
+      "true": "glioma",
+      "pred_A": "pituitary tumor",
+      "pred_B": "glioma",
+      "conf_A": 0.9538,
+      "conf_B": 0.959
+    },
+    {
+      "file": "762.png",
+      "patient_id": "102075",
+      "true": "glioma",
+      "pred_A": "pituitary tumor",
+      "pred_B": "glioma",
+      "conf_A": 0.8809,
+      "conf_B": 0.8549
+    },
+    {
+      "file": "763.png",
+      "patient_id": "102075",
+      "true": "glioma",
+      "pred_A": "meningioma",
+      "pred_B": "glioma",
+      "conf_A": 0.7901,
+      "conf_B": 0.7432
+    },
+    {
+      "file": "773.png",
+      "patient_id": "107747",
+      "true": "glioma",
+      "pred_A": "pituitary tumor",
+      "pred_B": "glioma",
+      "conf_A": 0.6866,
+      "conf_B": 0.9805
+    },
+    {
+      "file": "774.png",
+      "patient_id": "107747",
+      "true": "glioma",
+      "pred_A": "meningioma",
+      "pred_B": "glioma",
+      "conf_A": 0.9378,
+      "conf_B": 0.9825
+    },
+    {
+      "file": "775.png",
+      "patient_id": "107747",
+      "true": "glioma",
+      "pred_A": "meningioma",
+      "pred_B": "glioma",
+      "conf_A": 0.4293,
+      "conf_B": 0.9504
+    },
+    {
+      "file": "776.png",
+      "patient_id": "107747",
+      "true": "glioma",
+      "pred_A": "pituitary tumor",
+      "pred_B": "glioma",
+      "conf_A": 0.4984,
+      "conf_B": 0.9295
+    },
+    {
+      "file": "777.png",
+      "patient_id": "107747",
+      "true": "glioma",
+      "pred_A": "meningioma",
+      "pred_B": "glioma",
+      "conf_A": 0.7896,
+      "conf_B": 0.9888
+    },
+    {
+      "file": "853.png",
+      "patient_id": "107747",
+      "true": "glioma",
+      "pred_A": "meningioma",
+      "pred_B": "glioma",
+      "conf_A": 0.837,
+      "conf_B": 0.5132
+    },
+    {
+      "file": "855.png",
+      "patient_id": "107747",
+      "true": "glioma",
+      "pred_A": "meningioma",
+      "pred_B": "glioma",
+      "conf_A": 0.9675,
+      "conf_B": 0.8652
+    },
+    {
+      "file": "100.png",
+      "patient_id": "107494",
+      "true": "meningioma",
+      "pred_A": "pituitary tumor",
+      "pred_B": "meningioma",
+      "conf_A": 0.9939,
+      "conf_B": 0.9864
+    },
+    {
+      "file": "101.png",
+      "patient_id": "107494",
+      "true": "meningioma",
+      "pred_A": "pituitary tumor",
+      "pred_B": "meningioma",
+      "conf_A": 0.9974,
+      "conf_B": 0.9443
+    },
+    {
+      "file": "102.png",
+      "patient_id": "107494",
+      "true": "meningioma",
+      "pred_A": "pituitary tumor",
+      "pred_B": "meningioma",
+      "conf_A": 0.945,
+      "conf_B": 0.9794
+    }
+  ],
+  "broken_examples": [
+    {
+      "file": "838.png",
+      "patient_id": "102075",
+      "true": "glioma",
+      "pred_A": "glioma",
+      "pred_B": "meningioma",
+      "conf_A": 0.8346,
+      "conf_B": 0.6186
+    },
+    {
+      "file": "839.png",
+      "patient_id": "102075",
+      "true": "glioma",
+      "pred_A": "glioma",
+      "pred_B": "meningioma",
+      "conf_A": 0.9366,
+      "conf_B": 0.6509
+    },
+    {
+      "file": "844.png",
+      "patient_id": "105653",
+      "true": "glioma",
+      "pred_A": "glioma",
+      "pred_B": "meningioma",
+      "conf_A": 0.8577,
+      "conf_B": 0.7558
+    },
+    {
+      "file": "475.png",
+      "patient_id": "102420",
+      "true": "meningioma",
+      "pred_A": "meningioma",
+      "pred_B": "pituitary tumor",
+      "conf_A": 0.5361,
+      "conf_B": 0.528
+    },
+    {
+      "file": "495.png",
+      "patient_id": "102985",
+      "true": "meningioma",
+      "pred_A": "meningioma",
+      "pred_B": "pituitary tumor",
+      "conf_A": 0.5327,
+      "conf_B": 0.8467
+    },
+    {
+      "file": "607.png",
+      "patient_id": "112252",
+      "true": "meningioma",
+      "pred_A": "meningioma",
+      "pred_B": "pituitary tumor",
+      "conf_A": 0.5825,
+      "conf_B": 0.5128
+    }
+  ],
+  "both_wrong_examples": [
+    {
+      "file": "1884.png",
+      "patient_id": "MR049142",
+      "true": "glioma",
+      "pred_A": "meningioma",
+      "pred_B": "meningioma",
+      "conf_A": 0.5186,
+      "conf_B": 0.517
+    },
+    {
+      "file": "722.png",
+      "patient_id": "102075",
+      "true": "glioma",
+      "pred_A": "pituitary tumor",
+      "pred_B": "pituitary tumor",
+      "conf_A": 0.9993,
+      "conf_B": 0.6281
+    },
+    {
+      "file": "735.png",
+      "patient_id": "107747",
+      "true": "glioma",
+      "pred_A": "meningioma",
+      "pred_B": "meningioma",
+      "conf_A": 0.976,
+      "conf_B": 0.5292
+    },
+    {
+      "file": "845.png",
+      "patient_id": "105653",
+      "true": "glioma",
+      "pred_A": "pituitary tumor",
+      "pred_B": "meningioma",
+      "conf_A": 0.9477,
+      "conf_B": 0.6449
+    },
+    {
+      "file": "857.png",
+      "patient_id": "108479",
+      "true": "glioma",
+      "pred_A": "pituitary tumor",
+      "pred_B": "pituitary tumor",
+      "conf_A": 0.9684,
+      "conf_B": 0.7147
+    },
+    {
+      "file": "858.png",
+      "patient_id": "108479",
+      "true": "glioma",
+      "pred_A": "pituitary tumor",
+      "pred_B": "pituitary tumor",
+      "conf_A": 0.9323,
+      "conf_B": 0.6591
+    },
+    {
+      "file": "128.png",
+      "patient_id": "111366",
+      "true": "meningioma",
+      "pred_A": "pituitary tumor",
+      "pred_B": "pituitary tumor",
+      "conf_A": 0.9521,
+      "conf_B": 0.8441
+    },
+    {
+      "file": "129.png",
+      "patient_id": "111366",
+      "true": "meningioma",
+      "pred_A": "pituitary tumor",
+      "pred_B": "pituitary tumor",
+      "conf_A": 0.9996,
+      "conf_B": 0.6824
+    },
+    {
+      "file": "16.png",
+      "patient_id": "101127",
+      "true": "meningioma",
+      "pred_A": "pituitary tumor",
+      "pred_B": "pituitary tumor",
+      "conf_A": 0.9965,
+      "conf_B": 0.9806
+    },
+    {
+      "file": "19.png",
+      "patient_id": "101127",
+      "true": "meningioma",
+      "pred_A": "pituitary tumor",
+      "pred_B": "pituitary tumor",
+      "conf_A": 0.9999,
+      "conf_B": 0.9824
+    },
+    {
+      "file": "230.png",
+      "patient_id": "101127",
+      "true": "meningioma",
+      "pred_A": "pituitary tumor",
+      "pred_B": "pituitary tumor",
+      "conf_A": 1.0,
+      "conf_B": 0.8779
+    },
+    {
+      "file": "559.png",
+      "patient_id": "107494",
+      "true": "meningioma",
+      "pred_A": "pituitary tumor",
+      "pred_B": "pituitary tumor",
+      "conf_A": 0.9429,
+      "conf_B": 0.9222
+    },
+    {
+      "file": "589.png",
+      "patient_id": "111366",
+      "true": "meningioma",
+      "pred_A": "glioma",
+      "pred_B": "glioma",
+      "conf_A": 0.7385,
+      "conf_B": 0.8315
+    },
+    {
+      "file": "93.png",
+      "patient_id": "107248",
+      "true": "meningioma",
+      "pred_A": "pituitary tumor",
+      "pred_B": "pituitary tumor",
+      "conf_A": 0.997,
+      "conf_B": 0.7652
+    },
+    {
+      "file": "94.png",
+      "patient_id": "107248",
+      "true": "meningioma",
+      "pred_A": "pituitary tumor",
+      "pred_B": "pituitary tumor",
+      "conf_A": 0.9881,
+      "conf_B": 0.6194
+    },
+    {
+      "file": "95.png",
+      "patient_id": "107248",
+      "true": "meningioma",
+      "pred_A": "pituitary tumor",
+      "pred_B": "pituitary tumor",
+      "conf_A": 1.0,
+      "conf_B": 0.9839
+    },
+    {
+      "file": "96.png",
+      "patient_id": "107248",
+      "true": "meningioma",
+      "pred_A": "pituitary tumor",
+      "pred_B": "pituitary tumor",
+      "conf_A": 0.9884,
+      "conf_B": 0.8012
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "created_utc": "2026-11-02T19:57:24.749243+00:00",
+  "args": {
+    "loss": "focal",
+    "gamma": 2.0,
+    "beta": 0.999,
+    "run_name": "B_cbfocal",
+    "backbone": "B2",
+    "weights": "imagenet",
+    "epochs": 25,
+    "batch_size": 32,
+    "lr": 0.001,
+    "lr_factor": 0.3,
+    "lr_patience": 3,
+    "es_patience": 7,
+    "min_delta": 0.001,
+    "min_lr": 1e-06,
+    "seed": 42,
+    "deterministic": "off",
+    "subset": 1.0,
+    "keep_epoch_weights": 1,
+    "cpu": false,
+    "data": "/opt/ml/input/data/train/m4_data.npz",
+    "ckpt_dir": "/opt/ml/checkpoints",
+    "out_dir": "/opt/ml/model",
+    "n_boot": 1000
+  },
+  "platform": "Linux-6.12.111-136.204.amzn2023.x86_64-x86_64-with-glibc2.31",
+  "versions": {
+    "python": "3.10.14",
+    "numpy": "1.26.4",
+    "tensorflow": "2.16.2",
+    "keras": "3.4.1",
+    "gpus": [
+      "/physical_device:GPU:0"
+    ]
+  },
+  "git_commit": null,
+  "loss_info": {
+    "loss": "cb_focal",
+    "gamma": 2.0,
+    "beta": 0.999,
+    "alpha": [
+      0.7443780303001404,
+      1.243154764175415,
+      1.0124672651290894
+    ],
+    "alpha_counts": [
+      1024,
+      484,
+      637
+    ]
+  },
+  "determinism": "off",
+  "data_npz": "/opt/ml/input/data/train/m4_data.npz",
+  "data_npz_sha256": "5eb0f1bbed9b2c54125a5b487618b85b484328f46cf30693f14bc389ca6048cf",
+  "n_train": 9160,
+  "n_val": 359,
+  "n_test": 560,
+  "val_patients": 26,
+  "test_patients": 48,
+  "train_counts_preaug": [
+    1024,
+    484,
+    637
+  ],
+  "on_sagemaker": true,
+  "instance": "ml.g5.2xlarge",
+  "resumed": false,
+  "checkpoint_rule": "max patient-val macro-F1 (min_delta), tie-break meningioma recall",
+  "augmentation": "offline paper augmentation files only (rot 10, shift 0.1, h/v flip); no online aug"
+}
